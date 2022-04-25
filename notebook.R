@@ -1,5 +1,3 @@
-################Simulation for cluster-randomized experiments###################
-############Section 6.1, Comparing estimators and standard errors############### 
 library(tidyverse)
 library(gee)
 library(car)
@@ -16,8 +14,6 @@ N0 = 3000
 C = 160
 nsize = round(runif(C,N0 / C * 0.6, N0 / C * 1.4))
 N = sum(nsize)
-
-
 
 #Propensity scores for clusters
 ec = 0.3                                             
@@ -57,22 +53,6 @@ nc = nsize - N / C
 #Calculate causal effect
 causal = mean(Y1-Y0)
 
-#Set variable to store coverage probability for each each estimators and each regression variance estimation
-#tauI is individual-level regression, Difference-in-means
-#tauIR is individual-level regression adjustment with covariates x_{ij}
-#tauIR2 is individual-level regression adjustment with average covariates \bar{x}_{i\cdot}
-#tauT is cluster-total regression
-#tauTR is cluter-total regression adjustment with cluster size n_{ij} as covariates
-#tauTR2 is cluster-total regression adjustment with cluster size n_{ij} and sum of covariates \tilde{x}_{i\cdot}
-#tauA is cluster-average regression
-#tauA is cluster-average regression with average covariates \bar{x}_{i\cdot}
-#tauW is cluster-average regression with weight n_i/N
-#tauWR is cluster-average regression with weight n_i/N and average covariates \bar{x}_{i\cdot}
-#tauOLS is traditional ANCOVA regression with covariates x_{ij}
-#For variance estimation, ols and hw is OLS variance estimator and Huber-White variance estimator
-#The first line without additional explanation is variance estimator with theoretical guarentee
-#Which is Liang-Zeger for individual-level regression and ols, Huber-White for cluster-total regression
-#cluster-average regression, and weighted cluster-average regression
 tauIRp=0;tauTR2p=0;tauARp=0;tauOLSp=0
 tauIRpols=0;tauTR2pols=0;tauARpols=0;tauOLSpols=0
 tauIRphw=0;tauOLSphw=0
@@ -198,10 +178,10 @@ bar_data$row_name <- factor(bar_data$row_name,
 rate <- ggplot(data = bar_data, aes(x = row_name, y = value, fill = name)) + 
   geom_bar(position="dodge", stat = "identity") + ylim(0, 1) + 
   geom_abline(slope = 0, intercept = 0.95, lty = 2) +
-  scale_x_discrete(labels = c(expression(hat(tau)[I]^{adj}),
-                              expression(hat(tau)[T]^{adj}~(n[i])),
-                              expression({hat(tau)[T]^{adj}}(n[i],tilde(x)[i.])),
-                              expression(hat(tau)[A]^{adj}~(bar(x)[i.])))) +
+  scale_x_discrete(labels = c(expression(hat(tau)[I]),
+                              expression({ANOVA}),
+                              expression({hat(tau)[T]}),
+                              expression(hat(tau)[pi]))) +
   theme(axis.text.x = element_text(angle = 60, size = 13)) + 
   labs(x = "", y = "Coverage rate")
 
